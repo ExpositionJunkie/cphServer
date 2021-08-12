@@ -4,6 +4,21 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
+// Mongo Stuff
+const mongoose = require("mongoose");
+const url = "mongodb://localhost:27017/cphDB";
+const connect = mongoose.connect(url, {
+  useCreateIndex: true,
+  useFindAndModify: false,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+connect.then(
+  () => console.log("Connected correctly to server"),
+  (err) => console.log(err)
+);
+
 // Routes:
 const vanillaRouter = require("./routes/vanillaRouter");
 const groupRouter = require("./routes/groupRouter");
