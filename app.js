@@ -7,6 +7,7 @@ const logger = require("morgan");
 // Routes:
 const vanillaRouter = require("./routes/vanillaRouter");
 const groupRouter = require("./routes/groupRouter");
+const playersRouter = require("./routes/playersRouter");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/vanilla", vanillaRouter);
 app.use("/groups", groupRouter);
+app.use("/players", playersRouter);
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
