@@ -1,79 +1,82 @@
 const express = require("express");
 const groupRouter = express.Router();
+const Group = require("../models/group");
 
+// Multiple Groups
 groupRouter
   .route("/")
-  .all((req, res, next) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/plain");
-    next();
+  .get((req, res, next) => {
+    Group.find()
+      .then((groups) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(groups);
+      })
+      .catch((err) => next(err));
   })
-  .get((req, res) => {
-    res.end("Will send all the groups to you.");
-  })
-  .post((req, res) => {
-    res.end(
-      `Will add the group: ${req.body.name} with description ${req.body.description}`
-    );
+  .post((req, res, next) => {
+    Group.create(req.body)
+      .then((group) => {
+        console.log("Group Created", group);
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(group);
+      })
+      .catch((err) => next(err));
   })
   .put((req, res) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /groups");
   })
-  .delete((req, res) => {
-    res.end("Deleting all groups");
+  .delete((req, res, next) => {
+    Group.deleteMany()
+      .then((response) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(response);
+      })
+      .catch((err) => next(err));
   });
 
+// Single Group By Id
 groupRouter
   .route("/:groupId")
-  .all((req, res, next) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/plain");
-    next();
-  })
-  .get((req, res) => {
-    res.end(`Will send details of the group: ${req.params.groupId} to you`);
+  .get((req, res, next) => {
+    Group.findById(req.params.groupId)
+      .then((group) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(group);
+      })
+      .catch((err) => next(err));
   })
   .post((req, res) => {
     res.statusCode = 403;
     res.end(`POST operation not supported on /groups/${req.params.groupId}`);
   })
-  .put((req, res) => {
-    res.write(`Updating the group: ${req.params.groupId}\n`);
-    res.end(
-      `Will update the group: ${req.body.name} with description: ${req.body.description}`
-    );
+  .put((req, res, next) => {
+    Group.findByIdAndUpdate(
+      req.params.groupId,
+      {
+        $set: req.body,
+      },
+      { new: true }
+    )
+      .then((group) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(group);
+      })
+      .catch((err) => next(err));
   })
-  .delete((req, res) => {
-    res.end(`Deleting group: ${req.params.groupId}`);
-  });
-
-groupRouter
-  .route("/:groupId/playerId")
-  .all((req, res, next) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/plain");
-    next();
-  })
-  .get((req, res) => {
-    res.end(
-      `Will send details of the player: ${req.params.groupId.playerId} to you`
-    );
-  })
-  .post((req, res) => {
-    res.statusCode = 403;
-    res.end(
-      `POST operation not supported on /groups/${req.params.groupId.playerId}`
-    );
-  })
-  .put((req, res) => {
-    res.write(`Updating the player: ${req.params.groupId.playerId}\n`);
-    res.end(
-      `Will update the player: ${req.body.name} with description: ${req.body.description}`
-    );
-  })
-  .delete((req, res) => {
-    res.end(`Deleting player: ${req.params.groupId.playerId}`);
+  .delete((req, res, next) => {
+    Group.findByIdAndDelete(req.params.groupId)
+      .then((response) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(response);
+      })
+      .catch((err) => next(err));
   });
 
 module.exports = groupRouter;
