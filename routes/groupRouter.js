@@ -1,4 +1,5 @@
 const express = require("express");
+const authenticate = require("../authenticate");
 const groupRouter = express.Router();
 const Group = require("../models/group");
 
@@ -14,7 +15,7 @@ groupRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res, next) => {
+  .post(authenticate.verifyUser, (req, res, next) => {
     Group.create(req.body)
       .then((group) => {
         console.log("Group Created", group);
@@ -24,11 +25,11 @@ groupRouter
       })
       .catch((err) => next(err));
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /groups");
   })
-  .delete((req, res, next) => {
+  .delete(authenticate.verifyUser, (req, res, next) => {
     Group.deleteMany()
       .then((response) => {
         res.statusCode = 200;
@@ -50,11 +51,11 @@ groupRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end(`POST operation not supported on /groups/${req.params.groupId}`);
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     Group.findByIdAndUpdate(
       req.params.groupId,
       {
@@ -69,7 +70,7 @@ groupRouter
       })
       .catch((err) => next(err));
   })
-  .delete((req, res, next) => {
+  .delete(authenticate.verifyUser, (req, res, next) => {
     Group.findByIdAndDelete(req.params.groupId)
       .then((response) => {
         res.statusCode = 200;

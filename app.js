@@ -1,12 +1,30 @@
+/* 
+  Next steps:
+  * Adding players to groups
+  * Authorization
+*/
+
 const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
+// Passport and Authentication
+const passport = require("passport");
+const config = require("./config");
+
 // Mongo Stuff
 const mongoose = require("mongoose");
-const url = "mongodb://localhost:27017/cphDB";
+
+// Routes:
+const vanillaRouter = require("./routes/vanillaRouter");
+const groupRouter = require("./routes/groupRouter");
+const playersRouter = require("./routes/playersRouter");
+const indexRouter = require("./routes/index");
+const usersRouter = require("./routes/users");
+
+const url = config.mongoUrl;
 const connect = mongoose.connect(url, {
   useCreateIndex: true,
   useFindAndModify: false,
@@ -19,13 +37,6 @@ connect.then(
   (err) => console.log(err)
 );
 
-// Routes:
-const vanillaRouter = require("./routes/vanillaRouter");
-const groupRouter = require("./routes/groupRouter");
-const playersRouter = require("./routes/playersRouter");
-const indexRouter = require("./routes/index");
-const usersRouter = require("./routes/users");
-
 const app = express();
 
 // view engine setup
@@ -37,6 +48,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use(passport.initialize());
+
+app.use("/", indexRouter);
+app.use("/users", usersRouter);
 
 app.use("/vanilla", vanillaRouter);
 app.use("/groups", groupRouter);

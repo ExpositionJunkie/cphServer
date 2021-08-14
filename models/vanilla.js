@@ -42,7 +42,7 @@ const vanillaSchema = new Schema(
       type: String,
       required: true,
     },
-    tableArr: [tableSchema],
+    tables: [tableSchema],
   },
   {
     timestamps: true,

@@ -1,6 +1,7 @@
 const express = require("express");
 const { rawListeners } = require("../models/player");
 const Player = require("../models/player");
+const authenticate = require("../authenticate");
 const playersRouter = express.Router();
 
 // Multiple Players
@@ -15,7 +16,7 @@ playersRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res, next) => {
+  .post(authenticate.verifyUser, (req, res, next) => {
     Player.create(req.body)
       .then((player) => {
         console.log("Player Created", player);
@@ -25,11 +26,11 @@ playersRouter
       })
       .catch((err) => next(err));
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /players");
   })
-  .delete((req, res, next) => {
+  .delete(authenticate.verifyUser, (req, res, next) => {
     Player.deleteMany()
       .then((response) => {
         res.statusCode = 200;
@@ -51,11 +52,11 @@ playersRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end(`POST operation not supported on /players/${req.params.playerId}`);
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     Player.findByIdAndUpdate(
       req.params.playerId,
       {
@@ -70,7 +71,7 @@ playersRouter
       })
       .catch((err) => next(err));
   })
-  .delete((req, res, next) => {
+  .delete(authenticate.verifyUser, (req, res, next) => {
     Player.findByIdAndDelete(req.params.playerId)
       .then((response) => {
         res.statusCode = 200;
