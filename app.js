@@ -17,10 +17,15 @@ const config = require("./config");
 // Mongo Stuff
 const mongoose = require("mongoose");
 
+// Photos
+// article: https://medium.com/@alvenw/how-to-store-images-to-mongodb-with-node-js-fb3905c37e6d
+const multer = require("multer");
+
 // Routes:
 const vanillaRouter = require("./routes/vanillaRouter");
 const groupRouter = require("./routes/groupRouter");
 const playersRouter = require("./routes/playersRouter");
+const uploadRouter = require("./routes/uploadRouter");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 
@@ -57,8 +62,7 @@ app.use("/users", usersRouter);
 app.use("/vanilla", vanillaRouter);
 app.use("/groups", groupRouter);
 app.use("/players", playersRouter);
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use("/imageUpload", uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
